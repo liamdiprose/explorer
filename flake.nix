@@ -24,21 +24,24 @@
           "rustfmt"
         ];
 
+        buildRustPackage = (pkgs.makeRustPlatform {
+          cargo = rustPkg;
+          rustc = rustPkg;
+        }).buildRustPackage;
+
         beamPackages = pkgs.beam.packages.erlangR25;
         elixir = pkgs.beamPackages.elixir_1_14;
         erlang = pkgs.erlangR25;
-        mixNixDeps = import ./mix_deps.nix {
-          inherit (pkgs) lib;
-          inherit elixir;
-          inherit beamPackages;
-        };
       in
       {
-        packages.default = pkgs.callPackage ./default.nix {
-          inherit elixir;
-          inherit (beamPackages) buildMix;
-          inherit (mixNixDeps) rustler rustler_precompiled table table_rex toml;
-          inherit rustPkg;
+        packages = rec {
+          native = pkgs.callPackage ./native.nix {
+            inherit buildRustPackage;
+          };
+          default = pkgs.callPackage ./default.nix {
+            inherit elixir beamPackages;
+            nativePkg = native;
+          };
         };
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
