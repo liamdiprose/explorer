@@ -28,9 +28,9 @@ buildRustPackage {
   src = ./native/explorer;
   cargoLock = {
     lockFile = ./native/explorer/Cargo.lock;
-    outputHashes = {
-       "zstd-0.11.2+zstd.1.5.2" = "LFDR6c0LiLLqpOzFA5A2WhiH2/ig5Z33uhmJ+lbM5z0=";
-     };
+    # outputHashes = {
+    #    "zstd-0.11.2+zstd.1.5.2" = "LFDR6c0LiLLqpOzFA5A2WhiH2/ig5Z33uhmJ+lbM5z0=";
+    #  };
    };
 
    doCheck = false;
