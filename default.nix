@@ -1,27 +1,42 @@
-{ buildMix, elixir, rustler, rustler_precompiled, table, table_rex, toml, rustPkg }:
+{ lib,
+  elixir,
+  beamPackages,
+  nativePkg,
+  symlinkJoin
+}:
 
-buildMix {
-  name = "explorer";
-  version = "0.5.5";
+let
+  mixNixDeps = import ./mix_deps.nix {
+    inherit lib;
+    inherit elixir;
+    inherit beamPackages;
+  };
+  elixirPkg = beamPackages.buildMix {
+    name = "elixir-explorer-mix";
+    version = "0.5.5";
 
-  inherit elixir;
+    inherit elixir;
 
-  preConfigure = ''
-    pwd
-    ls
-  '';
+    src = ./.;
 
-  src = ./.;
+    beamDeps = with mixNixDeps; [
+      rustler
+      rustler_precompiled
+      table
+      table_rex
+      toml
+    ];
 
-  beamDeps = [
-    rustler
-    rustler_precompiled
-    table
-    table_rex
-    toml
-  ];
+    propagatedBuildInputs = [
+      nativePkg
+    ];
+  };
+in
+  symlinkJoin {
+    name = "elixir-explorer";
+    paths = [
+      nativePkg
+      elixirPkg
+    ];
+  }
 
-  nativeBuildInputs = [
-    rustPkg
-  ];
-}
