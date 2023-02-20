@@ -13,7 +13,7 @@
   outputs = { self, nixpkgs, flake-utils, fenix }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        overlays = [ fenix.overlay ];
+        overlays = [ fenix.overlays.default ];
         pkgs = import nixpkgs { inherit overlays system; };
         toolchain = "latest";
         rustPkg = fenix.packages.${system}.${toolchain}.withComponents [
@@ -23,20 +23,48 @@
           "rustc"
           "rustfmt"
         ];
+
+        buildRustPackage = (pkgs.makeRustPlatform {
+          cargo = rustPkg;
+          rustc = rustPkg;
+        }).buildRustPackage;
+
+        beamPackages = pkgs.beam.packages.erlangR25;
+        elixir = pkgs.beamPackages.elixir_1_14;
+        erlang = pkgs.erlangR25;
+
+        mixNixDeps = import ./mix_deps.nix {
+          inherit (pkgs) lib;
+          # inherit elixir;
+          inherit beamPackages;
+        };
       in
       {
+        packages = rec {
+          native = pkgs.callPackage ./native.nix {
+            inherit buildRustPackage;
+          };
+          default = pkgs.callPackage ./default.nix {
+            inherit elixir;
+            inherit (beamPackages) buildMix;
+            inherit (mixNixDeps) table table_rex rustler rustler_precompiled toml;
+            nativePkg = native;
+          };
+        };
+
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
+            elixir
+            erlang
             act
             clang
-            beam.packages.erlangR25.elixir_1_14
-            erlangR25
             gdb
             libiconv
             openssl
             pkg-config
             rustPkg
             rust-analyzer-nightly
+            mix2nix
           ] ++ lib.optionals stdenv.isDarwin [
             darwin.apple_sdk.frameworks.Security
           ];

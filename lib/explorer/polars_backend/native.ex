@@ -5,23 +5,24 @@ defmodule Explorer.PolarsBackend.Native do
   version = mix_config[:version]
   github_url = mix_config[:package][:links]["GitHub"]
 
-  use RustlerPrecompiled,
+  use Rustler,
     otp_app: :explorer,
-    version: version,
-    base_url: "#{github_url}/releases/download/v#{version}",
-    targets: ~w(
-      aarch64-apple-darwin
-      aarch64-unknown-linux-gnu
-      aarch64-unknown-linux-musl
-      arm-unknown-linux-gnueabihf
-      riscv64gc-unknown-linux-gnu
-      x86_64-apple-darwin
-      x86_64-pc-windows-msvc
-      x86_64-pc-windows-gnu
-      x86_64-unknown-linux-gnu
-      x86_64-unknown-linux-musl
-    ),
-    force_build: System.get_env("EXPLORER_BUILD") in ["1", "true"]
+    skip_compilation?: true
+    # version: version,
+    # base_url: "#{github_url}/releases/download/v#{version}",
+    # targets: ~w(
+    #   aarch64-apple-darwin
+    #   aarch64-unknown-linux-gnu
+    #   aarch64-unknown-linux-musl
+    #   arm-unknown-linux-gnueabihf
+    #   riscv64gc-unknown-linux-gnu
+    #   x86_64-apple-darwin
+    #   x86_64-pc-windows-msvc
+    #   x86_64-pc-windows-gnu
+    #   x86_64-unknown-linux-gnu
+    #   x86_64-unknown-linux-musl
+    # ),
+    # force_build: true # System.get_env("EXPLORER_BUILD") in ["1", "true"]
 
   defstruct [:inner]
 
