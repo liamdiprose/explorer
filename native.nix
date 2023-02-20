@@ -2,6 +2,7 @@
   buildRustPackage,
   # zstd,
   # lz4,
+  elixir,
   act,
   clang,
   gdb,
@@ -12,9 +13,7 @@
 
 buildRustPackage {
   pname = "elixir-explorer-native";
-  version = "0.1.0";
-
-  DEBUGLEVEL = "5";
+  version = "0.5.0";
 
   buildInputs = [
     act
@@ -24,6 +23,14 @@ buildRustPackage {
     openssl
     pkg-config
   ];
+
+  RUSTLER_NIF_VERSION = "2.16";
+
+  postConfigure = ''
+    ${elixir}/bin/elixir -e 'IO.puts("DETECTED NIF VERSION: #{:erlang.system_info(:nif_version)}")'
+    export RUSTLER_NIF_VERSION
+  '';
+
 
   src = ./native/explorer;
   cargoLock = {

@@ -29,9 +29,9 @@
           rustc = rustPkg;
         }).buildRustPackage;
 
-        beamPackages = pkgs.beam.packages.erlangR25;
+        beamPackages = pkgs.beam.packages.erlangR24;
         elixir = pkgs.beamPackages.elixir_1_14;
-        erlang = pkgs.erlangR25;
+        erlang = pkgs.erlangR24;
 
         mixNixDeps = import ./mix_deps.nix {
           inherit (pkgs) lib;
