@@ -43,6 +43,17 @@
             nativePkg = native;
           };
         };
+
+        lib.buildPackage = {elixir, beamPackages, pkgs}:
+          let
+            native = pkgs.callPackage ./native.nix {
+              inherit buildRustPackage;
+            };
+          in pkgs.callPackage ./default.nix {
+              nativePkg = native;
+              inherit elixir beamPackages;
+            };
+
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             elixir
