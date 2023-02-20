@@ -1,16 +1,13 @@
 { lib,
   elixir,
-  beamPackages,
-  nativePkg
+  buildMix,
+  nativePkg,
+  rustler,
+  table,
+  table_rex,
+  toml
 }:
-
-let
-  mixNixDeps = import ./mix_deps.nix {
-    inherit lib;
-    inherit elixir;
-    inherit beamPackages;
-  };
-in beamPackages.buildMix {
+buildMix {
   name = "explorer";
   version = "0.5.5";
 
@@ -18,7 +15,7 @@ in beamPackages.buildMix {
 
   src = ./.;
 
-  beamDeps = with mixNixDeps; [
+  beamDeps = [
     rustler
     # rustler_precompiled
     table

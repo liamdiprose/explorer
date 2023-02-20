@@ -32,6 +32,12 @@
         beamPackages = pkgs.beam.packages.erlangR25;
         elixir = pkgs.beamPackages.elixir_1_14;
         erlang = pkgs.erlangR25;
+
+        mixNixDeps = import ./mix_deps.nix {
+          inherit (pkgs) lib;
+          inherit elixir;
+          inherit beamPackages;
+        };
       in
       {
         packages = rec {
@@ -39,20 +45,12 @@
             inherit buildRustPackage;
           };
           default = pkgs.callPackage ./default.nix {
-            inherit elixir beamPackages;
+            inherit elixir;
+            inherit (beamPackages) buildMix;
+            inherit (mixNixDeps) table table_rex rustler toml;
             nativePkg = native;
           };
         };
-
-        lib.buildPackage = {elixir, beamPackages, pkgs}:
-          let
-            native = pkgs.callPackage ./native.nix {
-              inherit buildRustPackage;
-            };
-          in pkgs.callPackage ./default.nix {
-              nativePkg = native;
-              inherit elixir beamPackages;
-            };
 
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
