@@ -24,10 +24,11 @@ buildMix {
     toml
   ];
 
+  buildInputs = [ nativePkg ];
+
   postInstall = ''
-    ls -l $out/lib/erlang/lib/
     RUSTLER_LOAD_DIR=$out/lib/erlang/lib/explorer-0.5.0/priv/native
     mkdir -p $RUSTLER_LOAD_DIR
-    cp ${nativePkg}/lib/libexplorer.so $RUSTLER_LOAD_DIR
+    ln -s ${nativePkg}/lib/libexplorer.so $RUSTLER_LOAD_DIR
   '';
 }
